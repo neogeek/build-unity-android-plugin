@@ -8,7 +8,7 @@ REDON=$(tput setaf 1)
 GREENON=$(tput setaf 2)
 COLOROFF=$(tput sgr0)
 
-SOURCE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+SOURCE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)
 
 TEMPLATE_SOURCE_URL="https://codeload.github.com/neogeek/UnityAndroidPluginTemplate/zip/v1.0.0"
 
