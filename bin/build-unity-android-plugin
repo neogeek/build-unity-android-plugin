@@ -1,0 +1,163 @@
+#!/bin/bash
+
+set -e
+
+VERSION=1.0.0
+
+SOURCE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)
+
+TEMPLATE_SOURCE_URL="https://codeload.github.com/neogeek/UnityAndroidPluginTemplate/zip/v1.0.0"
+
+TEMPLATE_SOURCE_FILENAME="UnityAndroidPluginTemplate.zip"
+
+TEMPLATE_SOURCE_FOLDER="UnityAndroidPluginTemplate-1.0.0"
+
+PACKAGE_NAME="com.unity.androidplugin"
+
+MIN_SDK_VERSION=19
+
+TARGET_SDK_VERSION=30
+
+declare -a FILES
+
+displayVersion() {
+
+    echo "${VERSION}"
+
+    exit
+
+}
+
+displayHelp() {
+
+    printf "Usage: build-unity-android-plugin [options] <files>\n\n"
+
+    echo "OPTIONS:"
+    echo "   -v     show the version number and then exit"
+    echo "   -h     show this help message and then exit"
+    echo ""
+    echo "   -p     set package name in AndroidManifest.xml"
+    echo "   -m     min SDK version in gradle build"
+    echo "   -t     target SDK version in gradle build"
+
+    exit
+
+}
+
+parseOptions() {
+
+    while getopts "vhp:m:t:" option; do
+        case "${option}" in
+
+            v) displayVersion;;
+            h) displayHelp;;
+
+            p) PACKAGE_NAME="${OPTARG}";;
+            m) MIN_SDK_VERSION="${OPTARG}";;
+            t) TARGET_SDK_VERSION="${OPTARG}";;
+
+            ?*) displayHelp;;
+
+        esac
+    done
+
+    shift $((OPTIND - 1))
+
+    while [ -n "${1}" ]; do
+        FILES[${#FILES[@]}]="${1}"
+
+        shift
+    done
+
+}
+
+cacheTemplateSource() {
+
+    (
+        cd "${SOURCE_DIR}/../"
+
+        mkdir -p temp
+
+        cd temp/
+
+        if [ ! -f "${TEMPLATE_SOURCE_FILENAME}" ]; then
+            curl "${TEMPLATE_SOURCE_URL}" -s -o "${TEMPLATE_SOURCE_FILENAME}"
+        fi
+
+        rm -rf "${TEMPLATE_SOURCE_FOLDER}"
+
+        unzip -q "${TEMPLATE_SOURCE_FILENAME}"
+    )
+
+}
+
+copyFilesToTemplateSource() {
+
+    SRCDIR=$(sed 's/\./\//g' <<< "${PACKAGE_NAME}")
+
+    (
+        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}"
+
+        rm -rf app/androidplugin/src/main/java/*
+
+        mkdir -p "app/androidplugin/src/main/java/${SRCDIR}"
+    )
+
+    for file in "${FILES[@]}"
+    do
+        cp "${file}" "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/androidplugin/src/main/java/${SRCDIR}"
+    done
+
+}
+
+setPackageInAndroidManifest() {
+
+    (
+        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/androidplugin/src/main/"
+
+        sed -I "" -E "s/com.unity.androidplugin/${PACKAGE_NAME}/" AndroidManifest.xml
+    )
+
+}
+
+setSDKVersionInGradle() {
+
+    (
+        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/androidplugin/"
+
+        sed -I "" -E "s/minSdkVersion [0-9]*/minSdkVersion ${MIN_SDK_VERSION}/" build.gradle
+
+        sed -I "" -E "s/targetSdkVersion [0-9]*/targetSdkVersion ${TARGET_SDK_VERSION}/" build.gradle
+    )
+
+}
+
+build() {
+
+    CWD=$(pwd)
+
+    (
+        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}"
+
+        if [ -z "${ANDROID_SDK_ROOT}" ]; then
+            export ANDROID_SDK_ROOT=~/Library/Android/sdk
+        fi
+
+        ./gradlew assembleRelease
+
+        find app -type f -name "*.aar" -exec cp {} "${CWD}/" \;
+    )
+
+}
+
+parseOptions "$@"
+
+cacheTemplateSource
+
+copyFilesToTemplateSource
+
+setPackageInAndroidManifest
+
+setSDKVersionInGradle
+
+build
