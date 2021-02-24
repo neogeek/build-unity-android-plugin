@@ -6,11 +6,13 @@ VERSION=1.0.0
 
 SOURCE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)
 
-TEMPLATE_SOURCE_URL="https://codeload.github.com/neogeek/UnityAndroidPluginTemplate/zip/v1.0.0"
+TEMPLATE_SOURCE_VERSION="1.0.0"
 
-TEMPLATE_SOURCE_FILENAME="UnityAndroidPluginTemplate.zip"
+TEMPLATE_SOURCE_URL="https://codeload.github.com/neogeek/UnityAndroidPluginTemplate/zip/v${TEMPLATE_SOURCE_VERSION}"
 
-TEMPLATE_SOURCE_FOLDER="UnityAndroidPluginTemplate-1.0.0"
+TEMPLATE_SOURCE_FILENAME="UnityAndroidPluginTemplate-v${TEMPLATE_SOURCE_VERSION}.zip"
+
+TEMPLATE_SOURCE_FOLDER="UnityAndroidPluginTemplate-${TEMPLATE_SOURCE_VERSION}"
 
 PACKAGE_NAME="com.unity.androidplugin"
 
