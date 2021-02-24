@@ -49,14 +49,14 @@ parseOptions() {
     while getopts "vhp:m:t:" option; do
         case "${option}" in
 
-            v) displayVersion;;
-            h) displayHelp;;
+        v) displayVersion ;;
+        h) displayHelp ;;
 
-            p) PACKAGE_NAME="${OPTARG}";;
-            m) MIN_SDK_VERSION="${OPTARG}";;
-            t) TARGET_SDK_VERSION="${OPTARG}";;
+        p) PACKAGE_NAME="${OPTARG}" ;;
+        m) MIN_SDK_VERSION="${OPTARG}" ;;
+        t) TARGET_SDK_VERSION="${OPTARG}" ;;
 
-            ?*) displayHelp;;
+        ?*) displayHelp ;;
 
         esac
     done
@@ -93,7 +93,7 @@ cacheTemplateSource() {
 
 copyFilesToTemplateSource() {
 
-    SRCDIR=$(sed 's/\./\//g' <<< "${PACKAGE_NAME}")
+    SRCDIR=$(sed 's/\./\//g' <<<"${PACKAGE_NAME}")
 
     (
         cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}"
@@ -103,8 +103,7 @@ copyFilesToTemplateSource() {
         mkdir -p "app/androidplugin/src/main/java/${SRCDIR}"
     )
 
-    for file in "${FILES[@]}"
-    do
+    for file in "${FILES[@]}"; do
         cp "${file}" "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/androidplugin/src/main/java/${SRCDIR}"
     done
 
