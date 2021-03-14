@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION=1.1.0
+VERSION=1.2.0
 
 SOURCE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)
 
