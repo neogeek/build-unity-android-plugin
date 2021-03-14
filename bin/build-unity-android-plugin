@@ -102,11 +102,13 @@ copyFilesToTemplateSource() {
 
         rm -rf app/androidplugin/src/main/java/*
 
-        mkdir -p "app/androidplugin/src/main/java/${SRCDIR}"
+        mv app/androidplugin "app/${PACKAGE_NAME}"
+
+        mkdir -p "app/${PACKAGE_NAME}/src/main/java/${SRCDIR}"
     )
 
     for file in "${FILES[@]}"; do
-        cp "${file}" "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/androidplugin/src/main/java/${SRCDIR}"
+        cp "${file}" "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/${PACKAGE_NAME}/src/main/java/${SRCDIR}"
     done
 
 }
@@ -114,7 +116,7 @@ copyFilesToTemplateSource() {
 setPackageInAndroidManifest() {
 
     (
-        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/androidplugin/src/main/"
+        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/${PACKAGE_NAME}/src/main/"
 
         sed -I "" -E "s/com.unity.androidplugin/${PACKAGE_NAME}/" AndroidManifest.xml
     )
@@ -124,11 +126,21 @@ setPackageInAndroidManifest() {
 setSDKVersionInGradle() {
 
     (
-        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/androidplugin/"
+        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/${PACKAGE_NAME}/"
 
         sed -I "" -E "s/minSdkVersion [0-9]*/minSdkVersion ${MIN_SDK_VERSION}/" build.gradle
 
         sed -I "" -E "s/targetSdkVersion [0-9]*/targetSdkVersion ${TARGET_SDK_VERSION}/" build.gradle
+    )
+
+}
+
+setPathInSettings() {
+
+    (
+        cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/"
+
+        sed -I "" -E "s/:app:androidplugin/:app:${PACKAGE_NAME}/" settings.gradle
     )
 
 }
@@ -160,5 +172,7 @@ copyFilesToTemplateSource
 setPackageInAndroidManifest
 
 setSDKVersionInGradle
+
+setPathInSettings
 
 build
