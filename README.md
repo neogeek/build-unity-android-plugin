@@ -36,25 +36,26 @@ OPTIONS:
 ```java
 package com.scottdoxey.toast;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.Toast;
 
 public class AndroidPlugin {
 
-    private Context context;
+    private Activity activity;
 
     public AndroidPlugin(Context context) {
-
-        this.context = context;
-
+        this.activity = context;
     }
 
     public void ToastMakeText(String message) {
 
-        Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP|Gravity.START, 0, 0);
-        toast.show();
+        activity.runOnUiThread(() -> {
+            Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP|Gravity.START, 0, 0);
+            toast.show();
+        });
 
     }
 
