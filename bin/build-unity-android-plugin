@@ -2,11 +2,11 @@
 
 set -e
 
-VERSION=1.2.0
+VERSION=2.0.0
 
 SOURCE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)
 
-TEMPLATE_SOURCE_VERSION="1.1.0"
+TEMPLATE_SOURCE_VERSION="2.0.0"
 
 TEMPLATE_SOURCE_URL="https://codeload.github.com/neogeek/UnityAndroidPluginTemplate/zip/v${TEMPLATE_SOURCE_VERSION}"
 
@@ -16,9 +16,9 @@ TEMPLATE_SOURCE_FOLDER="UnityAndroidPluginTemplate-${TEMPLATE_SOURCE_VERSION}"
 
 PACKAGE_NAME="com.unity.androidplugin"
 
-MIN_SDK_VERSION=19
+MIN_SDK_VERSION=24
 
-TARGET_SDK_VERSION=30
+TARGET_SDK_VERSION=36
 
 declare -a FILES
 
@@ -128,9 +128,9 @@ setSDKVersionInGradle() {
     (
         cd "${SOURCE_DIR}/../temp/${TEMPLATE_SOURCE_FOLDER}/app/${PACKAGE_NAME}/"
 
-        sed -I "" -E "s/minSdkVersion [0-9]*/minSdkVersion ${MIN_SDK_VERSION}/" build.gradle
+        sed -I "" -E "s/minSdk = [0-9]*/minSdk ${MIN_SDK_VERSION}/" build.gradle
 
-        sed -I "" -E "s/targetSdkVersion [0-9]*/targetSdkVersion ${TARGET_SDK_VERSION}/" build.gradle
+        sed -I "" -E "s/targetSdk = [0-9]*/targetSdk ${TARGET_SDK_VERSION}/" build.gradle
     )
 
 }
